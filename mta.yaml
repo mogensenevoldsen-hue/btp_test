@@ -10,6 +10,9 @@ build-parameters:
       commands:
         - npm ci
         - npx cds build --production
+        - rm -rf .deploy/app-router/resources
+        - mkdir -p .deploy/app-router/resources
+        - cp -r app/hello .deploy/app-router/resources/hello
 modules:
   - name: test11-srv
     type: nodejs

@@ -1,5 +1,12 @@
 {
+  "welcomeFile": "/hello/webapp/index.html",
   "routes": [
+    {
+      "source": "^/hello/(.*)$",
+      "target": "hello/$1",
+      "localDir": "resources",
+      "authenticationType": "xsuaa"
+    },
     {
       "source": "^/(.*)$",
       "target": "$1",

@@ -1,0 +1,23 @@
+<mvc:View
+  controllerName="hello.controller.Main"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:f="sap.f"
+  xmlns="sap.m">
+  <f:DynamicPage>
+    <f:title>
+      <f:DynamicPageTitle>
+        <f:heading>
+          <Title text="Hello World" />
+        </f:heading>
+      </f:DynamicPageTitle>
+    </f:title>
+    <f:content>
+      <VBox class="sapUiSmallMargin" width="20rem">
+        <Label text="Navn" labelFor="name" />
+        <Input id="name" placeholder="World" submit=".onSayHello" />
+        <Button text="Sig hej" type="Emphasized" press=".onSayHello" class="sapUiSmallMarginTop" />
+        <Title id="greeting" level="H2" class="sapUiMediumMarginTop" />
+      </VBox>
+    </f:content>
+  </f:DynamicPage>
+</mvc:View>

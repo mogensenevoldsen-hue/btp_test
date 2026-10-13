@@ -1,0 +1,36 @@
+{
+  "_version": "1.60.0",
+  "sap.app": {
+    "id": "hello",
+    "type": "application",
+    "title": "Hello World",
+    "applicationVersion": { "version": "1.0.0" },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/hello/",
+        "type": "OData",
+        "settings": { "odataVersion": "4.0" }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5"
+  },
+  "sap.ui5": {
+    "rootView": {
+      "viewName": "hello.view.Main",
+      "type": "XML",
+      "id": "main"
+    },
+    "dependencies": {
+      "minUI5Version": "1.123.0",
+      "libs": { "sap.m": {}, "sap.f": {} }
+    },
+    "models": {
+      "": {
+        "dataSource": "mainService",
+        "settings": { "operationMode": "Server", "autoExpandSelect": true }
+      }
+    }
+  }
+}

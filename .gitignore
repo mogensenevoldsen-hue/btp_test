@@ -17,3 +17,6 @@ mta_archives/
 
 # @cap-js/cds-typer
 @cds-models
+
+# Fiori app copied into the approuter during mbt build
+.deploy/app-router/resources/
