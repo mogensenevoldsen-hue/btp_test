@@ -1,17 +1,11 @@
 <mvc:View
   controllerName="hello.controller.Main"
   xmlns:mvc="sap.ui.core.mvc"
-  xmlns:f="sap.f"
-  xmlns="sap.m">
-  <f:DynamicPage>
-    <f:title>
-      <f:DynamicPageTitle>
-        <f:heading>
-          <Title text="Hello World" />
-        </f:heading>
-      </f:DynamicPageTitle>
-    </f:title>
-    <f:content>
+  xmlns="sap.m"
+  displayBlock="true"
+  height="100%">
+  <App>
+    <Page title="Hello World">
       <VBox>
         <Panel headerText="Hello World">
           <VBox width="20rem">
@@ -41,6 +35,6 @@
           </VBox>
         </Panel>
       </VBox>
-    </f:content>
-  </f:DynamicPage>
+    </Page>
+  </App>
 </mvc:View>

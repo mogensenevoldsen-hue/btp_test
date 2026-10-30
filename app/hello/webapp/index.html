@@ -13,8 +13,11 @@
     data-sap-ui-on-init="module:sap/ui/core/ComponentSupport"
     data-sap-ui-resource-roots='{ "hello": "./" }'>
   </script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+  </style>
 </head>
 <body class="sapUiBody" id="content">
-  <div data-sap-ui-component data-name="hello" data-id="container" data-settings='{ "id": "hello" }'></div>
+  <div data-sap-ui-component data-name="hello" data-id="container" data-height="100%" data-settings='{ "id": "hello" }'></div>
 </body>
 </html>
