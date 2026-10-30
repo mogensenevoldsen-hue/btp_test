@@ -13,7 +13,7 @@ export default class VendorService extends cds.ApplicationService {
     this.on('supplierCheck', async req => {
       const { supplier } = req.data
       const s = await bp.run(SELECT.one.from(A_Supplier).where({ Supplier: supplier }))
-      if (!s) return req.reject(404, `Leverandør ${supplier} findes ikke`)
+      if (!s) return req.reject(404, `Supplier ${supplier} not found`)
 
       // The business partner number is normally the same as the supplier number
       const partner = await bp.run(SELECT.one.from(A_BusinessPartner).where({ Supplier: supplier }))
@@ -30,45 +30,45 @@ export default class VendorService extends cds.ApplicationService {
       const checks = []
       const add = (check, ok, details) => checks.push({ check, ok, details })
 
-      add('Navn', !!s.SupplierName, s.SupplierName || 'Navn mangler')
+      add('Name', !!s.SupplierName, s.SupplierName || 'Name is missing')
 
       const taxIds = [
-        ...(s.VATRegistration ? [`Moms: ${s.VATRegistration}`] : []),
+        ...(s.VATRegistration ? [`VAT: ${s.VATRegistration}`] : []),
         ...taxNumbers.filter(t => t.BPTaxNumber).map(t => `${t.BPTaxType}: ${t.BPTaxNumber}`)
       ]
-      add('Moms/skattenummer', taxIds.length > 0, taxIds.join(', ') || 'Intet moms- eller skattenummer')
+      add('VAT/tax number', taxIds.length > 0, taxIds.join(', ') || 'No VAT or tax number')
 
-      const addressFields = [['StreetName', 'gade'], ['PostalCode', 'postnr.'], ['CityName', 'by'], ['Country', 'land']]
+      const addressFields = [['StreetName', 'street'], ['PostalCode', 'postal code'], ['CityName', 'city'], ['Country', 'country']]
       const address = addresses.find(a => missing(a, addressFields).length === 0) ?? addresses[0]
-      if (!address) add('Adresse', false, 'Ingen adresse')
+      if (!address) add('Address', false, 'No address')
       else {
         const gaps = missing(address, addressFields)
         const text = `${[address.StreetName, address.HouseNumber].filter(Boolean).join(' ')}, ${[address.PostalCode, address.CityName].filter(Boolean).join(' ')}, ${address.Country ?? ''}`
-        add('Adresse', gaps.length === 0, gaps.length ? `Mangler ${gaps.join(', ')}: ${text}` : text)
+        add('Address', gaps.length === 0, gaps.length ? `Missing ${gaps.join(', ')}: ${text}` : text)
       }
 
       const accounts = banks.filter(b => b.IBAN || b.BankAccount)
-      add('Bankkonto', accounts.length > 0, accounts.length
-        ? accounts.map(b => [b.BankName, b.IBAN ? `IBAN ${b.IBAN}` : `reg.nr. ${b.BankNumber ?? '-'} konto ${b.BankAccount}`].filter(Boolean).join(': ')).join('; ')
-        : 'Ingen bankkonto')
+      add('Bank account', accounts.length > 0, accounts.length
+        ? accounts.map(b => [b.BankName, b.IBAN ? `IBAN ${b.IBAN}` : `bank number ${b.BankNumber ?? '-'} account ${b.BankAccount}`].filter(Boolean).join(': ')).join('; ')
+        : 'No bank account')
 
-      const companyFields = [['ReconciliationAccount', 'afstemningskonto'], ['PaymentTerms', 'betalingsbetingelser']]
-      add('Firmakode', companies.length > 0 && companies.every(c => missing(c, companyFields).length === 0), companies.length
+      const companyFields = [['ReconciliationAccount', 'reconciliation account'], ['PaymentTerms', 'payment terms']]
+      add('Company code', companies.length > 0 && companies.every(c => missing(c, companyFields).length === 0), companies.length
         ? companies.map(c => {
           const gaps = missing(c, companyFields)
-          return gaps.length ? `${c.CompanyCode}: mangler ${gaps.join(', ')}` : `${c.CompanyCode}: afstemningskonto ${c.ReconciliationAccount}, betalingsbetingelser ${c.PaymentTerms}`
+          return gaps.length ? `${c.CompanyCode}: missing ${gaps.join(', ')}` : `${c.CompanyCode}: reconciliation account ${c.ReconciliationAccount}, payment terms ${c.PaymentTerms}`
         }).join('; ')
-        : 'Ikke oprettet i nogen firmakode')
+        : 'Not created in any company code')
 
-      add('Indkøbsorganisation', purchasingOrgs.length > 0 && purchasingOrgs.every(p => p.PurchaseOrderCurrency), purchasingOrgs.length
-        ? purchasingOrgs.map(p => p.PurchaseOrderCurrency ? `${p.PurchasingOrganization}: valuta ${p.PurchaseOrderCurrency}` : `${p.PurchasingOrganization}: mangler ordrevaluta`).join('; ')
-        : 'Ikke oprettet i nogen indkøbsorganisation')
+      add('Purchasing organization', purchasingOrgs.length > 0 && purchasingOrgs.every(p => p.PurchaseOrderCurrency), purchasingOrgs.length
+        ? purchasingOrgs.map(p => p.PurchaseOrderCurrency ? `${p.PurchasingOrganization}: currency ${p.PurchaseOrderCurrency}` : `${p.PurchasingOrganization}: missing order currency`).join('; ')
+        : 'Not created in any purchasing organization')
 
-      const blocks = [[s.PostingIsBlocked, 'bogføring'], [s.PurchasingIsBlocked, 'indkøb'], [s.PaymentIsBlockedForSupplier, 'betaling']]
+      const blocks = [[s.PostingIsBlocked, 'posting'], [s.PurchasingIsBlocked, 'purchasing'], [s.PaymentIsBlockedForSupplier, 'payment']]
         .filter(([blocked]) => blocked).map(([, label]) => label)
-      add('Spærringer', blocks.length === 0, blocks.length ? `Spærret for ${blocks.join(', ')}` : 'Ingen spærringer')
+      add('Blocks', blocks.length === 0, blocks.length ? `Blocked for ${blocks.join(', ')}` : 'No blocks')
 
-      add('Slettemarkering', !s.DeletionIndicator, s.DeletionIndicator ? 'Markeret til sletning' : 'Ikke markeret til sletning')
+      add('Deletion flag', !s.DeletionIndicator, s.DeletionIndicator ? 'Marked for deletion' : 'Not marked for deletion')
 
       const failed = checks.filter(c => !c.ok).length
       return { supplier: s.Supplier, businessPartner, name: s.SupplierName, ok: failed === 0, failed, checks }

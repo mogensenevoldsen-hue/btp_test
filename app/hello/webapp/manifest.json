@@ -3,7 +3,7 @@
   "sap.app": {
     "id": "hello",
     "type": "application",
-    "title": "Leverandør check",
+    "title": "Supplier Check",
     "applicationVersion": {
       "version": "1.0.0"
     },
