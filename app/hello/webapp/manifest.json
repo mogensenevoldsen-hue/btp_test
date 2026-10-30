@@ -4,12 +4,23 @@
     "id": "hello",
     "type": "application",
     "title": "Hello World",
-    "applicationVersion": { "version": "1.0.0" },
+    "applicationVersion": {
+      "version": "1.0.0"
+    },
     "dataSources": {
       "mainService": {
         "uri": "/odata/v4/hello/",
         "type": "OData",
-        "settings": { "odataVersion": "4.0" }
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      },
+      "vendorService": {
+        "uri": "/odata/v4/vendor/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
       }
     }
   },
@@ -24,12 +35,25 @@
     },
     "dependencies": {
       "minUI5Version": "1.123.0",
-      "libs": { "sap.m": {}, "sap.f": {} }
+      "libs": {
+        "sap.m": {},
+        "sap.f": {}
+      }
     },
     "models": {
       "": {
         "dataSource": "mainService",
-        "settings": { "operationMode": "Server", "autoExpandSelect": true }
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true
+        }
+      },
+      "vendor": {
+        "dataSource": "vendorService",
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true
+        }
       }
     }
   }

@@ -28,6 +28,7 @@ modules:
           srv-url: ${default-url}
     requires:
       - name: test11-auth
+      - name: test11-destination
 
   - name: test11
     type: approuter.nodejs
@@ -44,6 +45,7 @@ modules:
           url: ~{srv-url}
           forwardAuthToken: true
       - name: test11-auth
+      - name: test11-destination
     provides:
       - name: app-api
         properties:
@@ -68,3 +70,8 @@ resources:
             - https://*~{app-api/app-uri}/**
     requires:
       - name: app-api
+  - name: test11-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite

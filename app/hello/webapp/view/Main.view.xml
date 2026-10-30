@@ -12,11 +12,34 @@
       </f:DynamicPageTitle>
     </f:title>
     <f:content>
-      <VBox class="sapUiSmallMargin" width="20rem">
-        <Label text="Navn" labelFor="name" />
-        <Input id="name" placeholder="World" submit=".onSayHello" />
-        <Button text="Sig hej" type="Emphasized" press=".onSayHello" class="sapUiSmallMarginTop" />
-        <Title id="greeting" level="H2" class="sapUiMediumMarginTop" />
+      <VBox>
+        <Panel headerText="Hello World">
+          <VBox width="20rem">
+            <Label text="Navn" labelFor="name" />
+            <Input id="name" placeholder="World" submit=".onSayHello" />
+            <Button text="Sig hej" type="Emphasized" press=".onSayHello" class="sapUiSmallMarginTop" />
+            <Title id="greeting" level="H2" class="sapUiMediumMarginTop" />
+          </VBox>
+        </Panel>
+        <Panel headerText="Er leverandøren spærret?">
+          <VBox width="20rem">
+            <Label text="Leverandørnummer" labelFor="supplier" />
+            <Input id="supplier" placeholder="fx 17300001" submit=".onLookupSupplier" />
+            <Button text="Slå op" type="Emphasized" press=".onLookupSupplier" class="sapUiSmallMarginTop" />
+          </VBox>
+          <VBox id="supplierResult" visible="{= !!${supplier>/supplier} }" class="sapUiMediumMarginTop">
+            <Title text="{supplier>/name} ({supplier>/supplier})" level="H2" />
+            <ObjectStatus
+              id="supplierBlocked"
+              text="{= ${supplier>/blocked} ? 'Spærret' : 'Ikke spærret' }"
+              state="{= ${supplier>/blocked} ? 'Error' : 'Success' }"
+              inverted="true"
+              class="sapUiSmallMarginTopBottom" />
+            <ObjectStatus title="Bogføring" text="{= ${supplier>/postingBlocked} ? 'Spærret' : 'Åben' }" state="{= ${supplier>/postingBlocked} ? 'Error' : 'Success' }" />
+            <ObjectStatus title="Indkøb" text="{= ${supplier>/purchasingBlocked} ? 'Spærret' : 'Åben' }" state="{= ${supplier>/purchasingBlocked} ? 'Error' : 'Success' }" />
+            <ObjectStatus title="Betaling" text="{= ${supplier>/paymentBlocked} ? 'Spærret' : 'Åben' }" state="{= ${supplier>/paymentBlocked} ? 'Error' : 'Success' }" />
+          </VBox>
+        </Panel>
       </VBox>
     </f:content>
   </f:DynamicPage>

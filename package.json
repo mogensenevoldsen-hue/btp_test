@@ -4,6 +4,9 @@
   "type": "module",
   "dependencies": {
     "@cap-js/sqlite": "^3",
+    "@sap-cloud-sdk/connectivity": "^4.9.1",
+    "@sap-cloud-sdk/http-client": "^4.9.1",
+    "@sap-cloud-sdk/resilience": "^4.9.1",
     "@sap/cds": "^10",
     "@sap/xssec": "^4"
   },
@@ -16,6 +19,16 @@
   "private": true,
   "cds": {
     "requires": {
+      "destinations": true,
+      "API_BUSINESS_PARTNER": {
+        "kind": "odata-v2",
+        "model": "srv/external/API_BUSINESS_PARTNER",
+        "[production]": {
+          "credentials": {
+            "destination": "API_BUSINESS_PARTNER"
+          }
+        }
+      },
       "[production]": {
         "auth": "xsuaa",
         "db": {
