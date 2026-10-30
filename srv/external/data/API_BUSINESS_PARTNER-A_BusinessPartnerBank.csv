@@ -1,2 +1,3 @@
 BusinessPartner;BankIdentification;BankCountryKey;BankName;BankNumber;BankAccount;IBAN;SWIFTCode
 17300001;0001;US;Bank of America;026009593;1234567890;;BOFAUS3N
+17300002;0001;US;Wells Fargo;121000248;9876543210;;WFBIUS6S

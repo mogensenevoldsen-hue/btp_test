@@ -57,6 +57,23 @@ service VendorService {
     status         : String;
   }
 
+  type ExternalResult {
+    check   : String;
+    status  : String;
+    details : String;
+  }
+
+  type ExternalAssessment {
+    provider       : String;
+    simulated      : Boolean;
+    checkedAt      : Timestamp;
+    registeredName : String;
+    riskScore      : Integer;
+    riskRating     : String;
+    results        : many ExternalResult;
+    error          : String;
+  }
+
   type SupplierCheck {
     supplier        : String(10);
     businessPartner : String(10);
@@ -67,6 +84,7 @@ service VendorService {
     details         : SupplierDetails;
     invoices        : many Invoice;
     invoicesError   : String;
+    external        : ExternalAssessment;
   }
 
   function supplierCheck(supplier : String(10)) returns SupplierCheck;

@@ -10,6 +10,20 @@ sap.ui.define([
       this.getView().setModel(new JSONModel({}), "supplier");
     },
 
+    externalFailedCount: function (external) {
+      const failed = (external?.results || []).filter((r) => r.status === "Failed").length;
+      return failed ? String(failed) : "";
+    },
+
+    externalIconColor: function (external) {
+      const failed = (external?.results || []).some((r) => r.status === "Failed");
+      return external?.error || failed ? "Negative" : "Positive";
+    },
+
+    formatTimestamp: function (value) {
+      return value ? new Date(value).toLocaleString() : "–";
+    },
+
     onCheckSupplier: async function () {
       const supplierModel = this.getView().getModel("supplier");
       supplierModel.setData({});

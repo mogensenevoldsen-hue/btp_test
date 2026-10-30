@@ -11,6 +11,11 @@ export default class VendorService extends cds.ApplicationService {
     } = bp.entities
     const invoiceApi = await cds.connect.to('API_SUPPLIERINVOICE_PROCESS_SRV')
     const { A_SupplierInvoice } = invoiceApi.entities
+    // Simulated external risk provider (srv/risk-service.js); point SUPPLIER_RISK_URL to a real provider later
+    const risk = await cds.connect.to('SupplierRisk', {
+      kind: 'rest',
+      credentials: { url: process.env.SUPPLIER_RISK_URL ?? `http://localhost:${process.env.PORT || 4004}/rest/risk` }
+    })
 
     this.on('supplierCheck', async req => {
       const { supplier } = req.data
@@ -33,10 +38,20 @@ export default class VendorService extends cds.ApplicationService {
       ])
 
       const addressIDs = addresses.map(a => a.AddressID).filter(Boolean)
-      const [phones, emails] = addressIDs.length ? await Promise.all([
-        bp.run(SELECT.from(A_AddressPhoneNumber).where({ AddressID: { in: addressIDs } })),
-        bp.run(SELECT.from(A_AddressEmailAddress).where({ AddressID: { in: addressIDs } }))
-      ]) : [[], []]
+      const [phones, emails, external] = await Promise.all([
+        addressIDs.length ? bp.run(SELECT.from(A_AddressPhoneNumber).where({ AddressID: { in: addressIDs } })) : [],
+        addressIDs.length ? bp.run(SELECT.from(A_AddressEmailAddress).where({ AddressID: { in: addressIDs } })) : [],
+        risk.send({
+          method: 'POST',
+          path: '/assess',
+          data: {
+            supplier,
+            name: s.SupplierName,
+            country: addresses.find(a => a.Country)?.Country,
+            bankAccounts: banks.map(b => ({ iban: b.IBAN, account: b.BankAccount, bankNumber: b.BankNumber }))
+          }
+        }).then(a => ({ ...a, error: null }), error => ({ results: [], error: `External check could not be run: ${error.message}` }))
+      ])
 
       const checks = []
       const add = (check, ok, details) => checks.push({ check, ok, details })
@@ -81,6 +96,10 @@ export default class VendorService extends cds.ApplicationService {
       add('Blocks', blocks.length === 0, blocks.length ? `Blocked for ${blocks.join(', ')}` : 'No blocks')
 
       add('Deletion flag', !s.DeletionIndicator, s.DeletionIndicator ? 'Marked for deletion' : 'Not marked for deletion')
+
+      const findings = external.results.filter(r => r.status === 'Failed')
+      add('External screening (simulated)', !external.error && findings.length === 0, external.error ??
+        (findings.length ? findings.map(f => `${f.check}: ${f.details}`).join('; ') : `No findings (risk ${external.riskRating})`))
 
       const failed = checks.filter(c => !c.ok).length
 
@@ -133,7 +152,7 @@ export default class VendorService extends cds.ApplicationService {
       }))
       const invoicesError = invoiceResult.error ? `Invoices could not be loaded: ${invoiceResult.error}` : null
 
-      return { supplier: s.Supplier, businessPartner, name: s.SupplierName, ok: failed === 0, failed, checks, details, invoices, invoicesError }
+      return { supplier: s.Supplier, businessPartner, name: s.SupplierName, ok: failed === 0, failed, checks, details, invoices, invoicesError, external }
     })
 
     return super.init()

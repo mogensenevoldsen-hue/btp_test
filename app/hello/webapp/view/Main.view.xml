@@ -219,6 +219,69 @@
                 </items>
               </Table>
             </IconTabFilter>
+            <IconTabFilter
+              key="external"
+              text="External"
+              icon="sap-icon://shield"
+              count="{path: 'supplier>/external', formatter: '.externalFailedCount'}"
+              iconColor="{path: 'supplier>/external', formatter: '.externalIconColor'}">
+              <MessageStrip
+                text="Simulated data from {supplier>/external/provider}. The results are fictitious and only for demonstration."
+                type="Information"
+                showIcon="true"
+                visible="{= !!${supplier>/external/simulated} }"
+                class="sapUiSmallMarginBottom" />
+              <MessageStrip
+                text="{supplier>/external/error}"
+                type="Error"
+                showIcon="true"
+                visible="{= !!${supplier>/external/error} }"
+                class="sapUiSmallMarginBottom" />
+              <HBox
+                id="externalSummary"
+                visible="{= !${supplier>/external/error} }"
+                alignItems="Center"
+                class="sapUiSmallMarginBottom">
+                <VBox class="sapUiMediumMarginEnd">
+                  <Label text="Risk score" />
+                  <ObjectNumber number="{supplier>/external/riskScore}" unit="/ 100" emphasized="true" />
+                </VBox>
+                <VBox class="sapUiMediumMarginEnd">
+                  <Label text="Risk rating" />
+                  <ObjectStatus
+                    text="{supplier>/external/riskRating}"
+                    state="{= ${supplier>/external/riskRating} === 'High' ? 'Error' : ${supplier>/external/riskRating} === 'Medium' ? 'Warning' : 'Success' }"
+                    inverted="true" />
+                </VBox>
+                <VBox class="sapUiMediumMarginEnd">
+                  <Label text="Registered name" />
+                  <Text text="{= ${supplier>/external/registeredName} || '–' }" />
+                </VBox>
+                <VBox>
+                  <Label text="Checked at" />
+                  <Text text="{path: 'supplier>/external/checkedAt', formatter: '.formatTimestamp'}" />
+                </VBox>
+              </HBox>
+              <Table id="externalResults" items="{supplier>/external/results}" noDataText="No external results">
+                <columns>
+                  <Column width="14rem"><Text text="Check" /></Column>
+                  <Column width="8rem"><Text text="Result" /></Column>
+                  <Column><Text text="Details" /></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <Text text="{supplier>check}" />
+                      <ObjectStatus
+                        text="{supplier>status}"
+                        state="{= ${supplier>status} === 'OK' ? 'Success' : ${supplier>status} === 'Warning' ? 'Warning' : 'Error' }"
+                        icon="{= ${supplier>status} === 'OK' ? 'sap-icon://sys-enter-2' : ${supplier>status} === 'Warning' ? 'sap-icon://alert' : 'sap-icon://error' }" />
+                      <Text text="{supplier>details}" />
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </IconTabFilter>
           </items>
         </IconTabBar>
       </VBox>
