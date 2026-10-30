@@ -1,0 +1,3 @@
+BusinessPartner;AddressID;StreetName;HouseNumber;PostalCode;CityName;Country
+17300001;1;Main Street;100;10001;New York;US
+17300002;2;Second Street;;94105;San Francisco;US

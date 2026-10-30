@@ -1,4 +1,4 @@
-Supplier;SupplierName;PostingIsBlocked;PurchasingIsBlocked;PaymentIsBlockedForSupplier
-17300001;Domestic US Supplier 1;false;false;false
-17300002;Domestic US Supplier 2;false;true;false
-17300003;Domestic US Supplier 3;true;true;true
+Supplier;SupplierName;SupplierAccountGroup;VATRegistration;PostingIsBlocked;PurchasingIsBlocked;PaymentIsBlockedForSupplier;DeletionIndicator
+17300001;Domestic US Supplier 1;SUPL;US123456789;false;false;false;false
+17300002;Domestic US Supplier 2;SUPL;;false;true;false;false
+17300003;Domestic US Supplier 3;SUPL;;true;true;true;true

@@ -1,14 +1,20 @@
 using from './external/API_BUSINESS_PARTNER';
 
 service VendorService {
-  type SupplierStatus {
-    supplier          : String(10);
-    name              : String(80);
-    blocked           : Boolean;
-    postingBlocked    : Boolean;
-    purchasingBlocked : Boolean;
-    paymentBlocked    : Boolean;
+  type Check {
+    check   : String;
+    ok      : Boolean;
+    details : String;
   }
 
-  function supplierStatus(supplier : String(10)) returns SupplierStatus;
+  type SupplierCheck {
+    supplier        : String(10);
+    businessPartner : String(10);
+    name            : String(80);
+    ok              : Boolean;
+    failed          : Integer;
+    checks          : many Check;
+  }
+
+  function supplierCheck(supplier : String(10)) returns SupplierCheck;
 }

@@ -7,23 +7,39 @@
   <App>
     <Page title="Leverandør check">
       <VBox>
-        <Panel headerText="Er leverandøren spærret?">
+        <Panel headerText="Er leverandøren korrekt oprettet?">
           <VBox width="20rem">
             <Label text="Leverandørnummer" labelFor="supplier" />
-            <Input id="supplier" placeholder="fx 17300001" submit=".onLookupSupplier" />
-            <Button text="Slå op" type="Emphasized" press=".onLookupSupplier" class="sapUiSmallMarginTop" />
+            <Input id="supplier" placeholder="fx 17300001" submit=".onCheckSupplier" />
+            <Button text="Tjek" type="Emphasized" press=".onCheckSupplier" class="sapUiSmallMarginTop" />
           </VBox>
           <VBox id="supplierResult" visible="{= !!${supplier>/supplier} }" class="sapUiMediumMarginTop">
             <Title text="{supplier>/name} ({supplier>/supplier})" level="H2" />
             <ObjectStatus
-              id="supplierBlocked"
-              text="{= ${supplier>/blocked} ? 'Spærret' : 'Ikke spærret' }"
-              state="{= ${supplier>/blocked} ? 'Error' : 'Success' }"
+              id="supplierOverall"
+              text="{= ${supplier>/ok} ? 'Korrekt oprettet' : ${supplier>/failed} + ' fejl fundet' }"
+              state="{= ${supplier>/ok} ? 'Success' : 'Error' }"
               inverted="true"
               class="sapUiSmallMarginTopBottom" />
-            <ObjectStatus title="Bogføring" text="{= ${supplier>/postingBlocked} ? 'Spærret' : 'Åben' }" state="{= ${supplier>/postingBlocked} ? 'Error' : 'Success' }" />
-            <ObjectStatus title="Indkøb" text="{= ${supplier>/purchasingBlocked} ? 'Spærret' : 'Åben' }" state="{= ${supplier>/purchasingBlocked} ? 'Error' : 'Success' }" />
-            <ObjectStatus title="Betaling" text="{= ${supplier>/paymentBlocked} ? 'Spærret' : 'Åben' }" state="{= ${supplier>/paymentBlocked} ? 'Error' : 'Success' }" />
+            <Table id="checks" items="{supplier>/checks}">
+              <columns>
+                <Column width="12rem"><Text text="Kontrol" /></Column>
+                <Column width="8rem"><Text text="Resultat" /></Column>
+                <Column><Text text="Detaljer" /></Column>
+              </columns>
+              <items>
+                <ColumnListItem>
+                  <cells>
+                    <Text text="{supplier>check}" />
+                    <ObjectStatus
+                      text="{= ${supplier>ok} ? 'OK' : 'Fejl' }"
+                      state="{= ${supplier>ok} ? 'Success' : 'Error' }"
+                      icon="{= ${supplier>ok} ? 'sap-icon://sys-enter-2' : 'sap-icon://error' }" />
+                    <Text text="{supplier>details}" />
+                  </cells>
+                </ColumnListItem>
+              </items>
+            </Table>
           </VBox>
         </Panel>
       </VBox>

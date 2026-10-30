@@ -10,14 +10,14 @@ sap.ui.define([
       this.getView().setModel(new JSONModel({}), "supplier");
     },
 
-    onLookupSupplier: async function () {
+    onCheckSupplier: async function () {
       const supplierModel = this.getView().getModel("supplier");
       supplierModel.setData({});
       const supplier = this.byId("supplier").getValue().trim();
       if (!supplier) {
         return;
       }
-      const operation = this.getView().getModel("vendor").bindContext("/supplierStatus(...)");
+      const operation = this.getView().getModel("vendor").bindContext("/supplierCheck(...)");
       operation.setParameter("supplier", supplier);
       try {
         await operation.invoke();
