@@ -20,67 +20,90 @@
               text="{= ${supplier>/ok} ? 'Set up correctly' : ${supplier>/failed} + ' issue(s) found' }"
               state="{= ${supplier>/ok} ? 'Success' : 'Error' }"
               inverted="true"
-              class="sapUiSmallMarginTopBottom" />
-            <Table id="checks" items="{supplier>/checks}">
-              <columns>
-                <Column width="12rem"><Text text="Check" /></Column>
-                <Column width="8rem"><Text text="Result" /></Column>
-                <Column><Text text="Details" /></Column>
-              </columns>
-              <items>
-                <ColumnListItem>
-                  <cells>
-                    <Text text="{supplier>check}" />
-                    <ObjectStatus
-                      text="{= ${supplier>ok} ? 'OK' : 'Failed' }"
-                      state="{= ${supplier>ok} ? 'Success' : 'Error' }"
-                      icon="{= ${supplier>ok} ? 'sap-icon://sys-enter-2' : 'sap-icon://error' }" />
-                    <Text text="{supplier>details}" />
-                  </cells>
-                </ColumnListItem>
-              </items>
-            </Table>
+              class="sapUiSmallMarginTop" />
           </VBox>
         </Panel>
-        <Panel headerText="Supplier details" visible="{= !!${supplier>/supplier} }">
-          <VBox id="details" items="{supplier>/details}">
-            <items>
-              <ObjectAttribute title="{supplier>label}" text="{supplier>value}" class="sapUiTinyMarginBottom" />
-            </items>
-          </VBox>
-        </Panel>
-        <Panel headerText="Recent supplier invoices" visible="{= !!${supplier>/supplier} }">
-          <MessageStrip
-            text="{supplier>/invoicesError}"
-            type="Warning"
-            showIcon="true"
-            visible="{= !!${supplier>/invoicesError} }"
-            class="sapUiSmallMarginBottom" />
-          <Table id="invoices" items="{supplier>/invoices}" noDataText="No invoices found">
-            <columns>
-              <Column><Text text="Invoice" /></Column>
-              <Column><Text text="Supplier reference" /></Column>
-              <Column><Text text="Company code" /></Column>
-              <Column><Text text="Posting date" /></Column>
-              <Column hAlign="End"><Text text="Amount" /></Column>
-              <Column><Text text="Payment status" /></Column>
-            </columns>
-            <items>
-              <ColumnListItem>
-                <cells>
-                  <Text text="{supplier>invoice}/{supplier>fiscalYear}" />
-                  <Text text="{supplier>reference}" />
-                  <Text text="{supplier>companyCode}" />
-                  <Text text="{supplier>postingDate}" />
-                  <ObjectNumber number="{supplier>amount}" unit="{supplier>currency}" />
-                  <ObjectStatus
-                    text="{supplier>status}"
-                    state="{= ${supplier>paymentBlocked} ? 'Error' : 'Success' }" />
-                </cells>
-              </ColumnListItem>
-            </items>
-          </Table>
-        </Panel>
+        <IconTabBar
+          id="tabs"
+          selectedKey="checks"
+          visible="{= !!${supplier>/supplier} }"
+          expandable="false"
+          class="sapUiResponsiveContentPadding">
+          <items>
+            <IconTabFilter
+              key="checks"
+              text="Checks"
+              icon="sap-icon://checklist-item"
+              count="{= ${supplier>/failed} > 0 ? ${supplier>/failed} : '' }"
+              iconColor="{= ${supplier>/ok} ? 'Positive' : 'Negative' }">
+              <Table id="checks" items="{supplier>/checks}">
+                <columns>
+                  <Column width="12rem"><Text text="Check" /></Column>
+                  <Column width="8rem"><Text text="Result" /></Column>
+                  <Column><Text text="Details" /></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <Text text="{supplier>check}" />
+                      <ObjectStatus
+                        text="{= ${supplier>ok} ? 'OK' : 'Failed' }"
+                        state="{= ${supplier>ok} ? 'Success' : 'Error' }"
+                        icon="{= ${supplier>ok} ? 'sap-icon://sys-enter-2' : 'sap-icon://error' }" />
+                      <Text text="{supplier>details}" />
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </IconTabFilter>
+            <IconTabFilter
+              key="details"
+              text="Details"
+              icon="sap-icon://supplier">
+              <VBox id="details" items="{supplier>/details}">
+                <items>
+                  <ObjectAttribute title="{supplier>label}" text="{supplier>value}" class="sapUiTinyMarginBottom" />
+                </items>
+              </VBox>
+            </IconTabFilter>
+            <IconTabFilter
+              key="invoices"
+              text="Invoices"
+              icon="sap-icon://receipt"
+              count="{= ${supplier>/invoices} ? ${supplier>/invoices}.length : '' }">
+              <MessageStrip
+                text="{supplier>/invoicesError}"
+                type="Warning"
+                showIcon="true"
+                visible="{= !!${supplier>/invoicesError} }"
+                class="sapUiSmallMarginBottom" />
+              <Table id="invoices" items="{supplier>/invoices}" noDataText="No invoices found">
+                <columns>
+                  <Column><Text text="Invoice" /></Column>
+                  <Column><Text text="Supplier reference" /></Column>
+                  <Column><Text text="Company code" /></Column>
+                  <Column><Text text="Posting date" /></Column>
+                  <Column hAlign="End"><Text text="Amount" /></Column>
+                  <Column><Text text="Payment status" /></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <Text text="{supplier>invoice}/{supplier>fiscalYear}" />
+                      <Text text="{supplier>reference}" />
+                      <Text text="{supplier>companyCode}" />
+                      <Text text="{supplier>postingDate}" />
+                      <ObjectNumber number="{supplier>amount}" unit="{supplier>currency}" />
+                      <ObjectStatus
+                        text="{supplier>status}"
+                        state="{= ${supplier>paymentBlocked} ? 'Error' : 'Success' }" />
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </IconTabFilter>
+          </items>
+        </IconTabBar>
       </VBox>
     </Page>
   </App>

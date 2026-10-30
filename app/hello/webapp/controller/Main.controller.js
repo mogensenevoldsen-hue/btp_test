@@ -22,6 +22,7 @@ sap.ui.define([
       try {
         await operation.invoke();
         supplierModel.setData(operation.getBoundContext().getObject());
+        this.byId("tabs").setSelectedKey("checks");
       } catch (error) {
         MessageBox.error(error.message);
       }
