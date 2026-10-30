@@ -20,6 +20,24 @@ service API_BUSINESS_PARTNER {
   }
 
   @cds.persistence.skip : true
+  entity A_AddressPhoneNumber {
+    key AddressID                : String(10);
+    key Person                   : String(10);
+    key OrdinalNumber            : String(3);
+        PhoneNumber              : String(30);
+        PhoneNumberExtension     : String(10);
+        InternationalPhoneNumber : String(30);
+  }
+
+  @cds.persistence.skip : true
+  entity A_AddressEmailAddress {
+    key AddressID     : String(10);
+    key Person        : String(10);
+    key OrdinalNumber : String(3);
+        EmailAddress  : String(241);
+  }
+
+  @cds.persistence.skip : true
   entity A_BusinessPartnerBank {
     key BusinessPartner    : String(10);
     key BankIdentification : String(4);
@@ -43,6 +61,8 @@ service API_BUSINESS_PARTNER {
     key Supplier                    : String(10);
         SupplierName                : String(80);
         SupplierAccountGroup        : String(4);
+        CreationDate                : Date;
+        CreatedByUser               : String(12);
         VATRegistration             : String(20);
         PostingIsBlocked            : Boolean;
         PurchasingIsBlocked         : Boolean;
@@ -57,6 +77,8 @@ service API_BUSINESS_PARTNER {
         ReconciliationAccount : String(10);
         PaymentTerms          : String(4);
         PaymentMethodsList    : String(10);
+        AccountingClerk       : String(2);
+        PaymentBlockingReason : String(1);
   }
 
   @cds.persistence.skip : true

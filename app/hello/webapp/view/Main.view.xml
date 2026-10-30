@@ -42,6 +42,45 @@
             </Table>
           </VBox>
         </Panel>
+        <Panel headerText="Supplier details" visible="{= !!${supplier>/supplier} }">
+          <VBox id="details" items="{supplier>/details}">
+            <items>
+              <ObjectAttribute title="{supplier>label}" text="{supplier>value}" class="sapUiTinyMarginBottom" />
+            </items>
+          </VBox>
+        </Panel>
+        <Panel headerText="Recent supplier invoices" visible="{= !!${supplier>/supplier} }">
+          <MessageStrip
+            text="{supplier>/invoicesError}"
+            type="Warning"
+            showIcon="true"
+            visible="{= !!${supplier>/invoicesError} }"
+            class="sapUiSmallMarginBottom" />
+          <Table id="invoices" items="{supplier>/invoices}" noDataText="No invoices found">
+            <columns>
+              <Column><Text text="Invoice" /></Column>
+              <Column><Text text="Supplier reference" /></Column>
+              <Column><Text text="Company code" /></Column>
+              <Column><Text text="Posting date" /></Column>
+              <Column hAlign="End"><Text text="Amount" /></Column>
+              <Column><Text text="Payment status" /></Column>
+            </columns>
+            <items>
+              <ColumnListItem>
+                <cells>
+                  <Text text="{supplier>invoice}/{supplier>fiscalYear}" />
+                  <Text text="{supplier>reference}" />
+                  <Text text="{supplier>companyCode}" />
+                  <Text text="{supplier>postingDate}" />
+                  <ObjectNumber number="{supplier>amount}" unit="{supplier>currency}" />
+                  <ObjectStatus
+                    text="{supplier>status}"
+                    state="{= ${supplier>paymentBlocked} ? 'Error' : 'Success' }" />
+                </cells>
+              </ColumnListItem>
+            </items>
+          </Table>
+        </Panel>
       </VBox>
     </Page>
   </App>

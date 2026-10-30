@@ -7,8 +7,10 @@ export default class VendorService extends cds.ApplicationService {
     const bp = await cds.connect.to('API_BUSINESS_PARTNER')
     const {
       A_BusinessPartner, A_BusinessPartnerAddress, A_BusinessPartnerBank, A_BusinessPartnerTaxNumber,
-      A_Supplier, A_SupplierCompany, A_SupplierPurchasingOrg
+      A_AddressPhoneNumber, A_AddressEmailAddress, A_Supplier, A_SupplierCompany, A_SupplierPurchasingOrg
     } = bp.entities
+    const invoiceApi = await cds.connect.to('API_SUPPLIERINVOICE_PROCESS_SRV')
+    const { A_SupplierInvoice } = invoiceApi.entities
 
     this.on('supplierCheck', async req => {
       const { supplier } = req.data
@@ -19,13 +21,22 @@ export default class VendorService extends cds.ApplicationService {
       const partner = await bp.run(SELECT.one.from(A_BusinessPartner).where({ Supplier: supplier }))
       const businessPartner = partner?.BusinessPartner ?? supplier
 
-      const [addresses, banks, taxNumbers, companies, purchasingOrgs] = await Promise.all([
+      const [addresses, banks, taxNumbers, companies, purchasingOrgs, invoiceResult] = await Promise.all([
         bp.run(SELECT.from(A_BusinessPartnerAddress).where({ BusinessPartner: businessPartner })),
         bp.run(SELECT.from(A_BusinessPartnerBank).where({ BusinessPartner: businessPartner })),
         bp.run(SELECT.from(A_BusinessPartnerTaxNumber).where({ BusinessPartner: businessPartner })),
         bp.run(SELECT.from(A_SupplierCompany).where({ Supplier: supplier })),
-        bp.run(SELECT.from(A_SupplierPurchasingOrg).where({ Supplier: supplier }))
+        bp.run(SELECT.from(A_SupplierPurchasingOrg).where({ Supplier: supplier })),
+        // Invoices come from a second API; a failure there must not break the master data check
+        invoiceApi.run(SELECT.from(A_SupplierInvoice).where({ InvoicingParty: supplier }).orderBy('PostingDate desc').limit(10))
+          .then(rows => ({ rows }), error => ({ rows: [], error: error.message }))
       ])
+
+      const addressIDs = addresses.map(a => a.AddressID).filter(Boolean)
+      const [phones, emails] = addressIDs.length ? await Promise.all([
+        bp.run(SELECT.from(A_AddressPhoneNumber).where({ AddressID: { in: addressIDs } })),
+        bp.run(SELECT.from(A_AddressEmailAddress).where({ AddressID: { in: addressIDs } }))
+      ]) : [[], []]
 
       const checks = []
       const add = (check, ok, details) => checks.push({ check, ok, details })
@@ -66,12 +77,40 @@ export default class VendorService extends cds.ApplicationService {
 
       const blocks = [[s.PostingIsBlocked, 'posting'], [s.PurchasingIsBlocked, 'purchasing'], [s.PaymentIsBlockedForSupplier, 'payment']]
         .filter(([blocked]) => blocked).map(([, label]) => label)
+      for (const c of companies.filter(c => c.PaymentBlockingReason)) blocks.push(`payment in ${c.CompanyCode} (reason ${c.PaymentBlockingReason})`)
       add('Blocks', blocks.length === 0, blocks.length ? `Blocked for ${blocks.join(', ')}` : 'No blocks')
 
       add('Deletion flag', !s.DeletionIndicator, s.DeletionIndicator ? 'Marked for deletion' : 'Not marked for deletion')
 
       const failed = checks.filter(c => !c.ok).length
-      return { supplier: s.Supplier, businessPartner, name: s.SupplierName, ok: failed === 0, failed, checks }
+
+      const list = values => values.filter(Boolean).join(', ') || '-'
+      const details = [
+        { label: 'Business partner', value: businessPartner },
+        { label: 'Account group', value: s.SupplierAccountGroup || '-' },
+        { label: 'Created', value: [s.CreationDate, s.CreatedByUser && `by ${s.CreatedByUser}`].filter(Boolean).join(' ') || '-' },
+        { label: 'Phone', value: list(phones.map(p => p.InternationalPhoneNumber || [p.PhoneNumber, p.PhoneNumberExtension].filter(Boolean).join(' ext. '))) },
+        { label: 'Email', value: list(emails.map(e => e.EmailAddress)) },
+        ...companies.map(c => ({
+          label: `Company code ${c.CompanyCode}`,
+          value: `payment methods ${c.PaymentMethodsList || '-'}, accounting clerk ${c.AccountingClerk || '-'}, payment block ${c.PaymentBlockingReason || 'none'}`
+        }))
+      ]
+
+      const invoices = invoiceResult.rows.map(i => ({
+        invoice: i.SupplierInvoice,
+        fiscalYear: i.FiscalYear,
+        companyCode: i.CompanyCode,
+        reference: i.SupplierInvoiceIDByInvcgParty,
+        postingDate: i.PostingDate,
+        amount: i.InvoiceGrossAmount,
+        currency: i.DocumentCurrency,
+        paymentBlocked: !!i.PaymentBlockingReason,
+        status: i.PaymentBlockingReason ? `Blocked for payment (reason ${i.PaymentBlockingReason})` : 'Not blocked'
+      }))
+      const invoicesError = invoiceResult.error ? `Invoices could not be loaded: ${invoiceResult.error}` : null
+
+      return { supplier: s.Supplier, businessPartner, name: s.SupplierName, ok: failed === 0, failed, checks, details, invoices, invoicesError }
     })
 
     return super.init()

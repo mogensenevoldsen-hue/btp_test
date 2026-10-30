@@ -29,6 +29,15 @@
           }
         }
       },
+      "API_SUPPLIERINVOICE_PROCESS_SRV": {
+        "kind": "odata-v2",
+        "model": "srv/external/API_SUPPLIERINVOICE_PROCESS_SRV",
+        "[production]": {
+          "credentials": {
+            "destination": "API_SUPPLIERINVOICE_PROCESS_SRV"
+          }
+        }
+      },
       "[production]": {
         "auth": "xsuaa",
         "db": {
