@@ -1,6 +1,8 @@
 <mvc:View
   controllerName="hello.controller.Main"
   xmlns:mvc="sap.ui.core.mvc"
+  xmlns:core="sap.ui.core"
+  xmlns:form="sap.ui.layout.form"
   xmlns="sap.m"
   displayBlock="true"
   height="100%">
@@ -60,10 +62,125 @@
               key="details"
               text="Details"
               icon="sap-icon://supplier">
-              <VBox id="details" items="{supplier>/details}">
-                <items>
-                  <ObjectAttribute title="{supplier>label}" text="{supplier>value}" class="sapUiTinyMarginBottom" />
-                </items>
+              <VBox id="details">
+                <form:SimpleForm
+                  id="detailsForm"
+                  editable="false"
+                  layout="ColumnLayout"
+                  columnsM="2"
+                  columnsL="2"
+                  columnsXL="2">
+                  <form:content>
+                    <core:Title text="General" />
+                    <Label text="Business partner" />
+                    <Text text="{= ${supplier>/details/businessPartner} || '–' }" />
+                    <Label text="Account group" />
+                    <Text text="{= ${supplier>/details/accountGroup} || '–' }" />
+                    <Label text="Created on" />
+                    <Text text="{= ${supplier>/details/createdOn} || '–' }" />
+                    <Label text="Created by" />
+                    <Text text="{= ${supplier>/details/createdBy} || '–' }" />
+                    <core:Title text="Contact" />
+                    <Label text="Address" />
+                    <Text text="{= ${supplier>/details/address} || '–' }" />
+                    <Label text="Phone" />
+                    <Text text="{= ${supplier>/details/phone} || '–' }" />
+                    <Label text="Email" />
+                    <Text text="{= ${supplier>/details/email} || '–' }" />
+                  </form:content>
+                </form:SimpleForm>
+
+                <Table
+                  id="companyCodes"
+                  items="{supplier>/details/companyCodes}"
+                  noDataText="Not created in any company code"
+                  class="sapUiMediumMarginTop">
+                  <headerToolbar>
+                    <OverflowToolbar>
+                      <Title text="Company codes" level="H3" />
+                    </OverflowToolbar>
+                  </headerToolbar>
+                  <columns>
+                    <Column><Text text="Company code" /></Column>
+                    <Column><Text text="Reconciliation account" /></Column>
+                    <Column><Text text="Payment terms" /></Column>
+                    <Column><Text text="Payment methods" /></Column>
+                    <Column><Text text="Accounting clerk" /></Column>
+                    <Column><Text text="Payment block" /></Column>
+                  </columns>
+                  <items>
+                    <ColumnListItem>
+                      <cells>
+                        <ObjectIdentifier title="{supplier>companyCode}" />
+                        <Text text="{= ${supplier>reconciliationAccount} || '–' }" />
+                        <Text text="{= ${supplier>paymentTerms} || '–' }" />
+                        <Text text="{= ${supplier>paymentMethods} || '–' }" />
+                        <Text text="{= ${supplier>accountingClerk} || '–' }" />
+                        <ObjectStatus
+                          text="{= ${supplier>paymentBlock} ? 'Blocked (' + ${supplier>paymentBlock} + ')' : 'None' }"
+                          state="{= ${supplier>paymentBlock} ? 'Error' : 'Success' }" />
+                      </cells>
+                    </ColumnListItem>
+                  </items>
+                </Table>
+
+                <Table
+                  id="purchasingOrgs"
+                  items="{supplier>/details/purchasingOrgs}"
+                  noDataText="Not created in any purchasing organization"
+                  class="sapUiMediumMarginTop">
+                  <headerToolbar>
+                    <OverflowToolbar>
+                      <Title text="Purchasing organizations" level="H3" />
+                    </OverflowToolbar>
+                  </headerToolbar>
+                  <columns>
+                    <Column><Text text="Purchasing organization" /></Column>
+                    <Column><Text text="Order currency" /></Column>
+                    <Column><Text text="Payment terms" /></Column>
+                  </columns>
+                  <items>
+                    <ColumnListItem>
+                      <cells>
+                        <ObjectIdentifier title="{supplier>purchasingOrganization}" />
+                        <Text text="{= ${supplier>currency} || '–' }" />
+                        <Text text="{= ${supplier>paymentTerms} || '–' }" />
+                      </cells>
+                    </ColumnListItem>
+                  </items>
+                </Table>
+
+                <Table
+                  id="banks"
+                  items="{supplier>/details/banks}"
+                  noDataText="No bank accounts"
+                  class="sapUiMediumMarginTop">
+                  <headerToolbar>
+                    <OverflowToolbar>
+                      <Title text="Bank accounts" level="H3" />
+                    </OverflowToolbar>
+                  </headerToolbar>
+                  <columns>
+                    <Column><Text text="Bank" /></Column>
+                    <Column><Text text="Country" /></Column>
+                    <Column><Text text="Bank number" /></Column>
+                    <Column><Text text="Account" /></Column>
+                    <Column><Text text="IBAN" /></Column>
+                    <Column><Text text="SWIFT" /></Column>
+                  </columns>
+                  <items>
+                    <ColumnListItem>
+                      <cells>
+                        <ObjectIdentifier title="{= ${supplier>bankName} || '–' }" />
+                        <Text text="{= ${supplier>bankCountry} || '–' }" />
+                        <Text text="{= ${supplier>bankNumber} || '–' }" />
+                        <Text text="{= ${supplier>account} || '–' }" />
+                        <Text text="{= ${supplier>iban} || '–' }" />
+                        <Text text="{= ${supplier>swift} || '–' }" />
+                      </cells>
+                    </ColumnListItem>
+                  </items>
+                </Table>
               </VBox>
             </IconTabFilter>
             <IconTabFilter

@@ -84,18 +84,41 @@ export default class VendorService extends cds.ApplicationService {
 
       const failed = checks.filter(c => !c.ok).length
 
-      const list = values => values.filter(Boolean).join(', ') || '-'
-      const details = [
-        { label: 'Business partner', value: businessPartner },
-        { label: 'Account group', value: s.SupplierAccountGroup || '-' },
-        { label: 'Created', value: [s.CreationDate, s.CreatedByUser && `by ${s.CreatedByUser}`].filter(Boolean).join(' ') || '-' },
-        { label: 'Phone', value: list(phones.map(p => p.InternationalPhoneNumber || [p.PhoneNumber, p.PhoneNumberExtension].filter(Boolean).join(' ext. '))) },
-        { label: 'Email', value: list(emails.map(e => e.EmailAddress)) },
-        ...companies.map(c => ({
-          label: `Company code ${c.CompanyCode}`,
-          value: `payment methods ${c.PaymentMethodsList || '-'}, accounting clerk ${c.AccountingClerk || '-'}, payment block ${c.PaymentBlockingReason || 'none'}`
+      const list = values => values.filter(Boolean).join(', ') || null
+      const details = {
+        businessPartner,
+        accountGroup: s.SupplierAccountGroup,
+        createdOn: s.CreationDate,
+        createdBy: s.CreatedByUser,
+        address: address && [
+          [address.StreetName, address.HouseNumber].filter(Boolean).join(' '),
+          [address.PostalCode, address.CityName].filter(Boolean).join(' '),
+          address.Country
+        ].filter(Boolean).join(', '),
+        phone: list(phones.map(p => p.InternationalPhoneNumber || [p.PhoneNumber, p.PhoneNumberExtension].filter(Boolean).join(' ext. '))),
+        email: list(emails.map(e => e.EmailAddress)),
+        companyCodes: companies.map(c => ({
+          companyCode: c.CompanyCode,
+          reconciliationAccount: c.ReconciliationAccount,
+          paymentTerms: c.PaymentTerms,
+          paymentMethods: c.PaymentMethodsList,
+          accountingClerk: c.AccountingClerk,
+          paymentBlock: c.PaymentBlockingReason
+        })),
+        purchasingOrgs: purchasingOrgs.map(p => ({
+          purchasingOrganization: p.PurchasingOrganization,
+          currency: p.PurchaseOrderCurrency,
+          paymentTerms: p.PaymentTerms
+        })),
+        banks: banks.map(b => ({
+          bankName: b.BankName,
+          bankCountry: b.BankCountryKey,
+          bankNumber: b.BankNumber,
+          account: b.BankAccount,
+          iban: b.IBAN,
+          swift: b.SWIFTCode
         }))
-      ]
+      }
 
       const invoices = invoiceResult.rows.map(i => ({
         invoice: i.SupplierInvoice,

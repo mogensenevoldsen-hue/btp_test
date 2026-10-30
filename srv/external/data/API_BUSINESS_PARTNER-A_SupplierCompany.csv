@@ -1,3 +1,4 @@
 Supplier;CompanyCode;ReconciliationAccount;PaymentTerms;PaymentMethodsList;AccountingClerk;PaymentBlockingReason
 17300001;1710;21100000;0001;T;01;
 17300002;1710;21100000;;T;02;A
+17300001;US20;21100000;0004;;01;
