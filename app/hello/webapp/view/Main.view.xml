@@ -5,16 +5,8 @@
   displayBlock="true"
   height="100%">
   <App>
-    <Page title="Hello World">
+    <Page title="Leverandør check">
       <VBox>
-        <Panel headerText="Hello World">
-          <VBox width="20rem">
-            <Label text="Navn" labelFor="name" />
-            <Input id="name" placeholder="World" submit=".onSayHello" />
-            <Button text="Sig hej" type="Emphasized" press=".onSayHello" class="sapUiSmallMarginTop" />
-            <Title id="greeting" level="H2" class="sapUiMediumMarginTop" />
-          </VBox>
-        </Panel>
         <Panel headerText="Er leverandøren spærret?">
           <VBox width="20rem">
             <Label text="Leverandørnummer" labelFor="supplier" />

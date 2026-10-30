@@ -10,18 +10,6 @@ sap.ui.define([
       this.getView().setModel(new JSONModel({}), "supplier");
     },
 
-    onSayHello: async function () {
-      const name = this.byId("name").getValue() || "World";
-      const operation = this.getView().getModel().bindContext("/hello(...)");
-      operation.setParameter("to", name);
-      try {
-        await operation.invoke();
-        this.byId("greeting").setText(operation.getBoundContext().getProperty("value"));
-      } catch (error) {
-        MessageBox.error(error.message);
-      }
-    },
-
     onLookupSupplier: async function () {
       const supplierModel = this.getView().getModel("supplier");
       supplierModel.setData({});

@@ -3,18 +3,11 @@
   "sap.app": {
     "id": "hello",
     "type": "application",
-    "title": "Hello World",
+    "title": "Leverandør check",
     "applicationVersion": {
       "version": "1.0.0"
     },
     "dataSources": {
-      "mainService": {
-        "uri": "/odata/v4/hello/",
-        "type": "OData",
-        "settings": {
-          "odataVersion": "4.0"
-        }
-      },
       "vendorService": {
         "uri": "/odata/v4/vendor/",
         "type": "OData",
@@ -40,13 +33,6 @@
       }
     },
     "models": {
-      "": {
-        "dataSource": "mainService",
-        "settings": {
-          "operationMode": "Server",
-          "autoExpandSelect": true
-        }
-      },
       "vendor": {
         "dataSource": "vendorService",
         "settings": {
